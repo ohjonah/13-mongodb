@@ -68,11 +68,68 @@ describe('Bakery Routes', function() {
       it('should return a bakery', done => {
         request.get(`${url}/api/bakery/${this.tempBakery._id}`)
         .end((err, res) => {
-
-          console.log('this:', this.tempBakery);
           if (err) return done(err);
           expect(res.status).to.equal(200);
           expect(res.body.name).to.equal('test bakery name');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('PUT: /api/bakery/:id', function() {
+    describe('with a valid id', function() {
+
+      before( done => {
+        exampleBakery.timestamp = new Date();
+        new Bakery(exampleBakery).save()
+        .then( bakery => {
+          this.tempBakery = bakery;
+          done();
+        })
+        .catch(done);
+      });
+
+      after( done => {
+        delete exampleBakery.timestamp;
+        if (this.tempBakery) {
+          Bakery.remove({})
+          .then( () => done())
+          .catch(done);
+          return;
+        }
+        done();
+      });
+
+      it('should update a bakery', done => {
+        request.put(`${url}/api/bakery/${this.tempBakery._id}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('DELETE: /api/bakery/:id', function() {
+    describe('with a valid id', function() {
+
+      before( done => {
+        exampleBakery.timestamp = new Date();
+        new Bakery(exampleBakery).save()
+        .then( bakery => {
+          this.tempBakery = bakery;
+          done();
+        })
+        .catch(done);
+      });
+
+      it('should delete a bakery', done => {
+        request.delete(`${url}/api/bakery/${this.tempBakery._id}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(204);
           done();
         });
       });
