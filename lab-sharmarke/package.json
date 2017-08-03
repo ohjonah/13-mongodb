@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "DEBUG='note*' mocha",
-    "start": "DEBUG='note*' node server.js"
+    "test": "DEBUG='car*' mocha",
+    "start": "DEBUG='car*' node server.js"
   },
   "keywords": [],
   "author": "",

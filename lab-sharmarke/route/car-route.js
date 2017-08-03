@@ -8,9 +8,9 @@ const debug = require('debug')('car:car-router');
 
 carRouter.post('/api/car', jsonParser, function(req, res, next) {
   debug('POST: /api/car');
-  res.body.timestamp = new Date();
+  req.body.timestamp = new Date();
   new Car(req.body).save()
-  .then( car => res.json( ))
+  .then( car => res.json(car))
   .catch(next);
 });
 
