@@ -75,39 +75,54 @@ describe('Bakery Routes', function() {
         });
       });
     });
+
+    describe('with an invalid id', function() {
+      it('should return a 404', function() {
+        request.get(`${url}/api/bakery`)
+        .end((err, res) => {
+          expect(res.status).to.equal(404);
+        });
+      });
+    });
   });
 
   describe('PUT: /api/bakery/:id', function() {
-    describe('with a valid id', function() {
+    before( done => {
+      exampleBakery.timestamp = new Date();
+      new Bakery(exampleBakery).save()
+      .then( bakery => {
+        this.tempBakery = bakery;
+        done();
+      })
+      .catch(done);
+    });
 
-      before( done => {
-        exampleBakery.timestamp = new Date();
-        new Bakery(exampleBakery).save()
-        .then( bakery => {
-          this.tempBakery = bakery;
-          done();
-        })
+    after( done => {
+      delete exampleBakery.timestamp;
+      if (this.tempBakery) {
+        Bakery.remove({})
+        .then( () => done())
         .catch(done);
-      });
+        return;
+      }
+      done();
+    });
 
-      after( done => {
-        delete exampleBakery.timestamp;
-        if (this.tempBakery) {
-          Bakery.remove({})
-          .then( () => done())
-          .catch(done);
-          return;
-        }
+    it('should update a bakery', done => {
+      request.put(`${url}/api/bakery/${this.tempBakery._id}`)
+      .end((err, res) => {
+        if (err) return done(err);
+        expect(res.status).to.equal(200);
         done();
       });
+    });
 
-      it('should update a bakery', done => {
-        request.put(`${url}/api/bakery/${this.tempBakery._id}`)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.status).to.equal(200);
-          done();
-        });
+    it('should return a 404', done => {
+      request.put(`${url}/api/bakery`)
+      .end((err, res) => {
+        console.log('res:', res);
+        expect(res.status).to.equal(404);
+        done();
       });
     });
   });
